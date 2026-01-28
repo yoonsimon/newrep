@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>투두리스트 - BMAD Edition</title>
+
+    <link rel="stylesheet" href="./design/ncds.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--ncds-font-sans);
+        color: var(--ncds-gray-700);
+        background-color: var(--ncds-gray-50);
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 40px 16px;
+      }
+
+      .app {
+        width: 100%;
+        max-width: 520px;
+        background: var(--ncds-white);
+        border: 1px solid var(--ncds-gray-200);
+        border-radius: var(--ncds-radius-md); /* 8px 강제 */
+        box-shadow: var(--ncds-shadow);
+        overflow: hidden;
+      }
+
+      /* Typography Mapping */
+      header {
+        padding: 24px;
+        border-bottom: 1px solid var(--ncds-gray-200);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 24px; /* Display MD */
+        font-weight: 700;
+        color: var(--ncds-gray-900);
+        letter-spacing: -0.02em;
+      }
+
+      .sub {
+        margin-top: 4px;
+        font-size: 14px; /* Text SM */
+        color: var(--ncds-gray-500);
+      }
+
+      main {
+        padding: 24px;
+      }
+
+      form {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+      }
+
+      /* * Component: Input 
+       * [cite_start]Theme: InputDefault [cite: 293]
+       */
+      .ncds-input {
+        width: 100%;
+        height: 44px; /* InputHeight */
+        border: 1px solid var(--ncds-gray-200);
+        border-radius: var(--ncds-radius-md);
+        padding: 0 14px;
+        font-size: 14px;
+        font-family: var(--ncds-font-sans);
+        color: var(--ncds-gray-900);
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        background: var(--ncds-white);
+      }
+
+      .ncds-input::placeholder {
+        color: var(--ncds-gray-400);
+      }
+
+      .ncds-input:focus {
+        border-color: var(--ncds-red-500); /* Focus takes Primary Color */
+        box-shadow: 0 0 0 3px rgba(230, 30, 43, 0.15);
+      }
+
+      /* * Component: Checkbox 
+       * [cite_start]Theme: CheckboxDefault [cite: 80]
+       */
+      .ncds-input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border-radius: 4px; /* Small radius for checkbox */
+        accent-color: var(--ncds-red-500);
+        cursor: pointer;
+      }
+
+      /* * Component: Button (Primary)
+       * [cite_start]Theme: ButtonPrimary [cite: 14]
+       */
+      .ncds-btn-primary {
+        height: 44px; /* ButtonHeightMD */
+        border: 1px solid var(--ncds-red-500);
+        border-radius: var(--ncds-radius-md);
+        padding: 0 20px;
+        font-family: var(--ncds-font-sans);
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        color: var(--ncds-white);
+        background: var(--ncds-red-500);
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+
+      .ncds-btn-primary:hover {
+        background: var(--ncds-red-600);
+        border-color: var(--ncds-red-600);
+      }
+
+      .ncds-btn-primary:active {
+        background: var(--ncds-red-700);
+        border-color: var(--ncds-red-700);
+        transform: translateY(1px);
+      }
+
+      /* * Component: Button (Secondary)
+       * [cite_start]Theme: ButtonSecondary [cite: 15]
+       * Used for: Filters, Cancel actions
+       */
+      .ncds-btn-secondary {
+        height: 32px; /* ButtonHeightSM equivalent */
+        padding: 0 12px;
+        border-radius: var(--ncds-radius-md);
+        font-family: var(--ncds-font-sans);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        
+        /* Secondary Default Theme */
+        background: var(--ncds-white);
+        border: 1px solid var(--ncds-gray-300);
+        color: var(--ncds-gray-700);
+      }
+
+      .ncds-btn-secondary:hover {
+        background: var(--ncds-gray-50);
+        border-color: var(--ncds-gray-400);
+      }
+
+      /* State: Active Filter (Simulating Toggle ON) */
+      .ncds-btn-secondary.active {
+        background: rgba(230, 30, 43, 0.08); /* Red tint */
+        border-color: var(--ncds-red-500);
+        color: var(--ncds-red-500);
+        font-weight: 700;
+      }
+
+      .meta {
+        margin: 16px 2px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--ncds-gray-500);
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .toolbar {
+        margin-top: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .toolbar-group {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .empty {
+        margin-top: 32px;
+        padding: 24px;
+        border: 1px dashed var(--ncds-gray-300);
+        border-radius: var(--ncds-radius-md);
+        color: var(--ncds-gray-400);
+        font-size: 14px;
+        text-align: center;
+        background: var(--ncds-gray-50);
+      }
+
+      .item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 14px;
+        border: 1px solid var(--ncds-gray-200);
+        border-radius: var(--ncds-radius-md);
+        background: var(--ncds-white);
+        transition: box-shadow 0.15s;
+      }
+
+      .item:hover {
+        border-color: var(--ncds-gray-300);
+      }
+
+      .title {
+        font-size: 15px;
+        color: var(--ncds-gray-900);
+        line-height: 1.4;
+        word-break: break-word;
+      }
+
+      .title.done {
+        color: var(--ncds-gray-400);
+        text-decoration: line-through;
+      }
+
+      .drag-hint {
+        margin-top: 12px;
+        color: var(--ncds-gray-400);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .item[draggable="true"] {
+        cursor: grab;
+      }
+
+      .item.dragging {
+        opacity: 0.5;
+        background: var(--ncds-gray-50);
+        border-style: dashed;
+        cursor: grabbing;
+      }
+
+      .item.drop-target {
+        border-color: var(--ncds-red-500);
+        background: rgba(230, 30, 43, 0.02);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>투두리스트 (To-Do List)</h1>
+        <div class="sub">NCDS v1.0</div>
+      </header>
+      <main>
+        <form id="todoForm" autocomplete="off">
+          <input
+            id="todoInput"
+            class="ncds-input"
+            type="text"
+            placeholder="할 일을 입력하세요"
+            aria-label="할 일 입력"
+          />
+          <button class="ncds-btn-primary" type="submit">추가</button>
+        </form>
+
+        <div class="meta">
+          <span>총 <strong id="todoCount" style="color: var(--ncds-red-500)">0</strong>개</span>
+          <span id="hint">Enter로 간편하게 추가</span>
+        </div>
+
+        <div class="toolbar" aria-label="도구 모음">
+          <div class="toolbar-group" aria-label="필터">
+            <button id="filterAll" class="ncds-btn-secondary active" type="button">전체</button>
+            <button id="filterActive" class="ncds-btn-secondary" type="button">진행중</button>
+            <button id="filterDone" class="ncds-btn-secondary" type="button">완료</button>
+          </div>
+
+          <div class="toolbar-group" aria-label="관리">
+            <button id="clearDone" class="ncds-btn-secondary" type="button">완료 삭제</button>
+            <button id="clearAll" class="ncds-btn-secondary" type="button" style="color: var(--ncds-red-600)">전체 삭제</button>
+          </div>
+        </div>
+
+        <ul id="todoList" aria-label="할 일 목록"></ul>
+        <div id="emptyState" class="empty">등록된 할 일이 없습니다.</div>
+        <div class="drag-hint">항목을 드래그하여 순서를 변경할 수 있습니다.</div>
+      </main>
+    </div>
+
+    <script>
+      /* Logic은 그대로 유지하되, NCDS 클래스명 변경사항 반영 */
+      const form = document.getElementById("todoForm");
+      const input = document.getElementById("todoInput");
+      const list = document.getElementById("todoList");
+      const countEl = document.getElementById("todoCount");
+      const emptyEl = document.getElementById("emptyState");
+      const hintEl = document.getElementById("hint");
+
+      const filterBtns = {
+        all: document.getElementById("filterAll"),
+        active: document.getElementById("filterActive"),
+        done: document.getElementById("filterDone"),
+      };
+      
+      const clearDoneBtn = document.getElementById("clearDone");
+      const clearAllBtn = document.getElementById("clearAll");
+
+      let todos = [];
+      let filter = "all";
+      const STORAGE_KEY = "ncds_todo_v2";
+
+      function uid() {
+        return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function loadTodos() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch { return []; }
+      }
+
+      function saveTodos(data) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+      }
+
+      function setHint(msg) {
+        hintEl.textContent = msg;
+        hintEl.style.color = "var(--ncds-red-500)";
+        setTimeout(() => {
+            hintEl.textContent = "Enter로 간편하게 추가";
+            hintEl.style.color = "";
+        }, 2000);
+      }
+
+      function updateFilterUI() {
+        // NCDS Secondary Button Active State Logic
+        Object.keys(filterBtns).forEach(key => {
+            if (key === filter) {
+                filterBtns[key].classList.add("active");
+            } else {
+                filterBtns[key].classList.remove("active");
+            }
+        });
+        render();
+      }
+
+      function render() {
+        list.innerHTML = "";
+        
+        let viewData = todos;
+        if (filter === "active") viewData = todos.filter(t => !t.done);
+        if (filter === "done") viewData = todos.filter(t => t.done);
+
+        // Empty State Handling
+        if (todos.length === 0) {
+            emptyEl.style.display = "block";
+            emptyEl.textContent = "등록된 할 일이 없습니다.";
+        } else if (viewData.length === 0) {
+            emptyEl.style.display = "block";
+            emptyEl.textContent = "해당하는 항목이 없습니다.";
+        } else {
+            emptyEl.style.display = "none";
+        }
+
+        countEl.textContent = todos.length;
+
+        viewData.forEach(todo => {
+          const li = document.createElement("li");
+          li.className = "item";
+          li.draggable = true;
+          li.dataset.id = todo.id;
+
+          // Checkbox (NCDS Input style)
+          const chk = document.createElement("input");
+          chk.type = "checkbox";
+          chk.className = "ncds-input";
+          chk.checked = todo.done;
+          chk.onchange = () => {
+            todo.done = chk.checked;
+            saveTodos(todos);
+            render();
+          };
+
+          // Text
+          const span = document.createElement("div");
+          span.className = `title ${todo.done ? "done" : ""}`;
+          span.textContent = todo.text;
+
+          // Delete Button (NCDS Secondary Small)
+          const delBtn = document.createElement("button");
+          delBtn.className = "ncds-btn-secondary";
+          delBtn.textContent = "삭제";
+          delBtn.style.padding = "0 8px"; 
+          delBtn.style.height = "28px"; // Slightly smaller for item action
+          delBtn.onclick = () => {
+            todos = todos.filter(t => t.id !== todo.id);
+            saveTodos(todos);
+            render();
+          };
+
+          // Drag Events
+          li.ondragstart = (e) => {
+            li.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", todo.id);
+          };
+          li.ondragend = () => {
+            li.classList.remove("dragging");
+            document.querySelectorAll(".drop-target").forEach(el => el.classList.remove("drop-target"));
+          };
+          li.ondragover = (e) => {
+            e.preventDefault();
+            li.classList.add("drop-target");
+          };
+          li.ondragleave = () => li.classList.remove("drop-target");
+          li.ondrop = (e) => {
+            e.preventDefault();
+            li.classList.remove("drop-target");
+            const fromId = e.dataTransfer.getData("text/plain");
+            if (filter !== "all") {
+                setHint("'전체' 목록에서만 이동 가능합니다.");
+                return;
+            }
+            if (!fromId || fromId === todo.id) return;
+
+            const fromIdx = todos.findIndex(t => t.id === fromId);
+            const toIdx = todos.findIndex(t => t.id === todo.id);
+            
+            if(fromIdx > -1 && toIdx > -1) {
+                const [moved] = todos.splice(fromIdx, 1);
+                todos.splice(toIdx, 0, moved);
+                saveTodos(todos);
+                render();
+            }
+          };
+
+          li.append(chk, span, delBtn);
+          list.appendChild(li);
+        });
+      }
+
+      // Event Listeners
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const val = input.value.trim();
+        if (!val) return;
+        
+        // Duplicate Check
+        if (todos.some(t => t.text === val)) {
+            setHint("이미 등록된 할 일입니다.");
+            return;
+        }
+
+        todos.unshift({ id: uid(), text: val, done: false });
+        saveTodos(todos);
+        input.value = "";
+        render();
+      };
+
+      filterBtns.all.onclick = () => { filter = "all"; updateFilterUI(); };
+      filterBtns.active.onclick = () => { filter = "active"; updateFilterUI(); };
+      filterBtns.done.onclick = () => { filter = "done"; updateFilterUI(); };
+
+      clearDoneBtn.onclick = () => {
+        if(confirm("완료된 항목을 모두 삭제하시겠습니까?")) {
+            todos = todos.filter(t => !t.done);
+            saveTodos(todos);
+            render();
+        }
+      };
+
+      clearAllBtn.onclick = () => {
+        if(todos.length === 0) return;
+        if(confirm("정말 모든 할 일을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) {
+            todos = [];
+            saveTodos(todos);
+            render();
+        }
+      };
+
+      // Init
+      todos = loadTodos();
+      updateFilterUI();
+    </script>
+  </body>
+</html>

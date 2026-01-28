@@ -1,0 +1,31 @@
+/* * 🤖 NCDS Auto-Generated CSS
+ * Source: src/design/NCDS.hpp
+ * Updated: 2026. 1. 28. 오후 5:45:49
+ */
+:root {
+  /* --- Palette Colors --- */
+  --ncds-red-500: #EC1D31;
+  --ncds-red-600: #CF1722;
+  --ncds-red-700: #B7131C;
+  --ncds-white: #FFFFFF;
+  --ncds-gray-50: #F8FAFC;
+  --ncds-gray-100: #F1F5F9;
+  --ncds-gray-200: #E2E8F0;
+  --ncds-gray-300: #CBD5E1;
+  --ncds-gray-400: #94A3B8;
+  --ncds-gray-500: #64748B;
+  --ncds-gray-600: #475569;
+  --ncds-gray-700: #334155;
+  --ncds-gray-800: #1E293B;
+  --ncds-gray-900: #0F172A;
+  --ncds-black: #000000;
+  --ncds-green-500: #22C55E;
+  --ncds-orange-500: #F97316;
+  --ncds-blue-500: #3B82F6;
+  --ncds-violet-500: #8B5CF6;
+
+  /* --- Manual Tokens (C++ 헤더의 float 값 등) --- */
+  --ncds-radius-md: 8px;
+  --ncds-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --ncds-font-sans: "Commerce Sans", "Inter", -apple-system, sans-serif;
+}
